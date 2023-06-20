@@ -1,0 +1,16 @@
+For developing hibernate application 
+Steps are
+1. Using XML base mapping
+2. Annotation base
+-------------------------------
+Steps for developing
+On top - we have build path using all req. jar files 
+1. Persistent class
+2. Hibernate configuration
+3. Mapping
+4. create persistent object and do operations
+5. Configuration
+6. SessionFactory
+7. Session
+8. Transaction
+---------------------------------------------

@@ -1,0 +1,62 @@
+In today's session first we are going to learn ho does we
+can create maven project.
+For creating new maven project we will have to follow below given steps-
+1. Go to File and create new project
+2. type and select maven project.
+3. In new Maven project window
+	a. select Internal from catalog
+	b. in filter type quick because we are creating basic project so we need
+		basic templete.
+4.Then on next window we will have to input some values as below
+	a. groupid- it is going to represent package name
+	b. artifactId - it is project name
+	c. Package - keep it same as groupid.
+5. It may take some time to initialize your project.
+6. Next step, we will have to add dependencies for Hibernate, Log4j
+	and MSSQL server.
+	for doing this follow below steps
+	a. open pom.xml file from project
+		i. you will find 
+			<dependencies>
+			// here we have to add our dependencies
+			</dependencies>
+	b. open google and type hibernate maven and visit first link
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-core</artifactId>
+		    <version>5.6.0.Final</version>
+		</dependency>
+	c. open google and type MSSQL maven and visit first link
+
+		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>mssql-jdbc</artifactId>
+		    <version>9.4.1.jre8</version>
+		</dependency>
+	d. Check for jars, added or not?
+	e. if added then go and start writting your code but if not then 
+		right click on project and go to maven and then click on
+		update maven.
+7.Where is the Maven Local Repository?
+	This quick writeup will focus on where Maven stores all the local
+	dependencies locally – which is in the Maven local repository.
+	Simply put, when we run a Maven build, all the dependencies of 
+	our project (jars, plugin jars, other artifacts) are all stored 
+	locally for later use.
+	Also keep in mind that, beyond just this type of local repository,
+	Maven does support three types of repositories:
+
+	i. Local – Folder location on the local Dev machine
+	ii. Central – Repository provided by Maven community
+	iii. Remote – Organization owned custom repository
+8. When a Maven build is executed, Maven automatically downloads all the 
+	dependency jars into the local repository.
+	Usually, this directory is named .m2.
+	Here's where the default local repository is located based on OS:
+
+	Windows: C:\Users\<User_Name>\.m2
+	Linux: /home/<User_Name>/.m2
+	Mac: /Users/<user_name>/.m2
+

@@ -1,0 +1,199 @@
+-------------Step 1-----------------------------------
+package com.model;
+
+public class Customer {
+	private int cust_id;
+	private String cust_name;
+	private String cust_address;
+	public int getCust_id() {
+		return cust_id;
+	}
+	public void setCust_id(int cust_id) {
+		this.cust_id = cust_id;
+	}
+	public String getCust_name() {
+		return cust_name;
+	}
+	public void setCust_name(String cust_name) {
+		this.cust_name = cust_name;
+	}
+	public String getCust_address() {
+		return cust_address;
+	}
+	public void setCust_address(String cust_address) {
+		this.cust_address = cust_address;
+	}
+}
+-----------------------Step 2-----------------------------------
+customer.hbm.xml
+------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+          "-//Hibernate/Hibernate Mapping DTD 5.3//EN"  
+          "http://hibernate.sourceforge.net/hibernate-mapping-5.3.dtd">         
+<hibernate-mapping>
+	<class name="com.model.Customer" table="CustomerDetails">
+		<id name="cust_id">
+			<generator class="increment"></generator>
+		</id>
+		<property name="cust_name"></property>
+		<property name="cust_address"></property>
+	</class>
+</hibernate-mapping>  
+---------------------------Step 3-----------------------------
+customer.cfg.xml
+-------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+		<property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+
+
+		<property name="hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=MapDemo;instanceName=SQLEXPRESS2019;</property>
+		<property name="hibernate.connection.username">sa</property>
+		<property name="hibernate.connection.password">password_123</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<!-- List of XML mapping files -->
+		<mapping resource="customer.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>
+-------------------------------Step 4----DAO---------------------
+package com.dao;
+
+import org.hibernate.cfg.Configuration;
+public class CustomerDao {
+	public static Configuration getCustomConfig() {
+		Configuration conf= new Configuration();
+		conf.configure("customer.cfg.xml");
+		return conf;		
+	}
+}
+-----------------------------Step 5----Controller--------------------------
+package com.controller;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+import com.dao.CustomerDao;
+import com.model.Customer;
+
+
+public class CustomerController {
+	static Configuration conf = CustomerDao.getCustomConfig();
+	static Customer obj = new Customer();
+	public static void addCustomer() {
+		SessionFactory sfct = conf.buildSessionFactory();
+		Session session = sfct.openSession();
+		Transaction t=session.beginTransaction(); 
+		Scanner input = new Scanner(System.in);
+		System.out.println("Enter Customer Name");
+		String cust_name=input.next();
+		System.out.println("Enter Customer Address");
+		String cust_address=input.next();
+		obj.setCust_name(cust_name);
+		obj.setCust_address(cust_address);
+		session.save(obj);
+		t.commit();
+		session.close();
+		System.out.println("Customer Added Successfully");
+	}
+
+	public static void updateCustomer() {
+		SessionFactory sfct = conf.buildSessionFactory();
+		Session session = sfct.openSession();
+		Transaction t=session.beginTransaction(); 
+		Scanner input = new Scanner(System.in);
+		//Customer -- in HQL we have to use name of persistent class not table name
+		Query q=session.createQuery("update Customer set cust_name=:n where cust_id=:i");
+		System.out.println("Enter Customer ID to Update Name");
+		int cust_id=input.nextInt();
+		System.out.println("Enter Customer Name");
+		String cust_name=input.next();
+		q.setParameter("n",cust_name);  
+		q.setParameter("i",cust_id); 
+		int status=q.executeUpdate();  
+		System.out.println(status+" Rows Updated");  
+		t.commit();  
+		
+
+	}
+	public static void deleteCustomer() {
+		SessionFactory sfct = conf.buildSessionFactory();
+		Session session = sfct.openSession();
+		Transaction t=session.beginTransaction(); 
+		Scanner input = new Scanner(System.in);
+		Query q=session.createQuery("delete from Customer where cust_id=:i");
+		System.out.println("Enter Customer ID to Delete Customer");
+		int cust_id=input.nextInt();  
+		q.setParameter("i",cust_id); 
+		int status=q.executeUpdate();  
+		System.out.println(status+" Rows Deleted");  
+		t.commit();  
+
+	}
+	public static void getCustomer() {
+		SessionFactory sfct = conf.buildSessionFactory();
+		Session session = sfct.openSession();
+		TypedQuery query = session.createQuery("from Customer");
+		List<Customer> list = query.getResultList();
+		Iterator<Customer> itr = list.iterator();
+		while (itr.hasNext()) {
+			Customer q = itr.next();
+			System.out.println("Customer ID =" + q.getCust_id()+"-"+"Customer Name =" 
+			+ q.getCust_name()+"-"+"Customer Address =" + q.getCust_address());
+			
+		}
+		
+	}
+
+}
+-------------------------------------------Main Method----------------------------------------------------------
+package com.controller;
+
+import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		CustomerController obj = new CustomerController();
+		Scanner input=new Scanner(System.in);
+		System.out.println("------Menu-------");
+		System.out.println("1. Add Customer");
+		System.out.println("2. Update Customer");
+		System.out.println("3. Delete Customer");
+		System.out.println("4. Display Customer");
+		System.out.println("------------------");
+		System.out.println("Enter Your Choice");
+		int choice=input.nextInt();
+		if(choice==1) {
+			obj.addCustomer();
+		}else if(choice==2) {
+			obj.updateCustomer();
+		}else if(choice==3) {
+			obj.deleteCustomer();
+		}else if(choice==4) {
+			obj.getCustomer();
+		}else {
+			System.out.println("Wrong Choice");
+		}	
+		//obj.addCustomer();
+		//obj.getCustomer();
+		//obj.updateCustomer();
+		//obj.deleteCustomer();
+
+	}
+
+}
+-------------------------------------------------------------------------------

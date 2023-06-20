@@ -1,0 +1,165 @@
+package com.persistent;
+import javax.persistence.*;  
+
+@Entity  
+@Table(name = "CarShowroom")  
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)  
+public class Car {
+	
+	@Id  
+	@GeneratedValue(strategy=GenerationType.AUTO)  
+	      
+	@Column(name = "c_chesis_number")  
+	private int c_chesis_number;
+	@Column(name = "c_car_name")  
+	private String c_car_name;
+	
+	public int getC_chesis_number() {
+		return c_chesis_number;
+	}
+	public void setC_chesis_number(int c_chesis_number) {
+		this.c_chesis_number = c_chesis_number;
+	}
+	public String getC_car_name() {
+		return c_car_name;
+	}
+	public void setC_car_name(String c_car_name) {
+		this.c_car_name = c_car_name;
+	}
+	
+
+}
+---------------------------------------------------
+package com.persistent;
+import javax.persistence.*;
+
+@Entity  
+@Table(name="EconomicalCars")  
+@AttributeOverrides({  
+    @AttributeOverride(name="c_chesis_number", column=@Column(name="c_chesis_number")),  
+    @AttributeOverride(name="c_car_name", column=@Column(name="c_car_name"))  
+})  
+public class EconomicalCar extends Car {
+	
+	@Column(name="car_milage")
+	private float car_milage;
+	@Column(name="car_price")
+	private float car_price;
+	public float getCar_milage() {
+		return car_milage;
+	}
+	public void setCar_milage(float car_milage) {
+		this.car_milage = car_milage;
+	}
+	public float getCar_price() {
+		return car_price;
+	}
+	public void setCar_price(float car_price) {
+		this.car_price = car_price;
+	}
+	
+
+}
+---------------------------------------------------------------
+package com.persistent;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity  
+@Table(name="LuxuriousCars")  
+@AttributeOverrides({  
+    @AttributeOverride(name="c_chesis_number", column=@Column(name="c_chesis_number")),  
+    @AttributeOverride(name="c_car_name", column=@Column(name="c_car_name"))  
+})  
+public class LuxuriousCar extends Car{
+	@Column(name="car_engine_capacity")  
+	private int car_engine_capacity;
+	@Column(name="car_features")
+	private String car_features;
+	public int getCar_engine_capacity() {
+		return car_engine_capacity;
+	}
+	public void setCar_engine_capacity(int car_engine_capacity) {
+		this.car_engine_capacity = car_engine_capacity;
+	}
+	public String getCar_features() {
+		return car_features;
+	}
+	public void setCar_features(String car_features) {
+		this.car_features = car_features;
+	}
+	
+}
+-----------------------------------------------------------------------
+package com.persistent;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Configuration conf = new Configuration();
+		conf.configure();
+		SessionFactory sfct = conf.buildSessionFactory();
+		Session session = sfct.openSession();
+		
+		Transaction t=session.beginTransaction(); 
+		
+		Car car = new Car();
+		car.setC_car_name("Alto 800");
+		
+		EconomicalCar economicalCar= new EconomicalCar();
+		economicalCar.setC_car_name("Maruti Swift");
+		economicalCar.setCar_milage(25.5f);
+		economicalCar.setCar_price(9.5f);
+		
+		LuxuriousCar luxuriousCar = new LuxuriousCar();
+		luxuriousCar.setC_car_name("Audi A6");
+		luxuriousCar.setCar_engine_capacity(2500);
+		luxuriousCar.setCar_features("Best in Sedan Segment");
+		
+		session.persist(car);
+		session.persist(economicalCar);
+		session.persist(luxuriousCar);
+		
+		t.commit();
+		session.close();
+		System.out.println("Done");
+		
+
+	}
+
+}
+----------------------------------------------------------------
+hibernate.cfg.xml
+----------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+<session-factory>
+<property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+<property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+
+
+<property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=Employee;instanceName=SQLEXPRESS2019;</property>
+<property name = "hibernate.connection.username">sa</property>
+<property name = "hibernate.connection.password">password_123</property>
+<property name="hibernate.hbm2ddl.auto">update</property>
+<!-- List of XML mapping files -->
+<mapping class = "com.persistent.Car"/>
+<mapping class = "com.persistent.EconomicalCar"/>
+<mapping class = "com.persistent.LuxuriousCar"/>
+
+</session-factory>
+
+
+
+</hibernate-configuration>

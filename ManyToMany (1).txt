@@ -1,0 +1,179 @@
+package com.model;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Employee")
+public class Employee {
+	@Id
+	private int empId;
+	private String emp_name;
+	
+	@ManyToMany
+	private List<Project> project;
+
+	public int getEmpId() {
+		return empId;
+	}
+
+	public void setEmpId(int empId) {
+		this.empId = empId;
+	}
+
+	public String getEmp_name() {
+		return emp_name;
+	}
+
+	public void setEmp_name(String emp_name) {
+		this.emp_name = emp_name;
+	}
+
+	public List<Project> getProject() {
+		return project;
+	}
+
+	public void setProject(List<Project> project) {
+		this.project = project;
+	}
+	
+
+}
+---------------------------------------------------
+package com.model;
+
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="Project")
+public class Project {
+	@Id
+	private int pid;
+	@Column(name="project_name")
+	private String projectName;
+	
+	@ManyToMany
+	private List<Employee> emps;
+
+	public int getPid() {
+		return pid;
+	}
+
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public List<Employee> getEmps() {
+		return emps;
+	}
+
+	public void setEmps(List<Employee> emps) {
+		this.emps = emps;
+	}
+
+	
+
+}
+--------------------------------------------------------------
+package com.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class MainClass {
+
+	public static void main(String[] args) {
+		Configuration conf = new Configuration();
+		conf.configure();
+		SessionFactory sf =conf.buildSessionFactory();
+		
+		Employee emp1 = new Employee();
+		Employee emp2 = new Employee();
+		
+		emp1.setEmpId(3);
+		emp1.setEmp_name("Bhushan");
+		
+		emp2.setEmpId(4);
+		emp2.setEmp_name("Rakshit");
+		
+		
+		Project p1= new Project();
+		Project p2 = new Project();
+		p1.setPid(3);
+		p1.setProjectName("Lib Man");
+		
+		p2.setPid(4);
+		p2.setProjectName("ChatBox");
+		
+		List<Employee> emp = new ArrayList<Employee>();
+		List<Project> proj = new ArrayList<Project>();
+		emp.add(emp1);
+		emp.add(emp2);
+		
+		proj.add(p1);
+		proj.add(p2);
+		
+		emp1.setProject(proj);
+		p1.setEmps(emp);
+		
+		
+		Session s = sf.openSession();
+		Transaction t = s.beginTransaction();
+		s.save(emp1);
+		s.save(emp2);
+		s.save(p1);
+		s.save(p2);
+		
+		t.commit();
+		
+		
+		
+
+	}
+
+}
+------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+	<property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>    
+      <property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+      
+      
+      <property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=MapDemo;instanceName=SQLEXPRESS2019;</property>
+      <property name = "hibernate.connection.username">sa</property>
+      <property name = "hibernate.connection.password">password_123</property>
+      <property name="hibernate.hbm2ddl.auto">update</property>
+      <property name="show_sql" >true</property>
+      <!-- List of XML mapping files -->
+      <mapping class = "com.model.Employee"/>
+      <mapping class = "com.model.Project"/>
+	
+	</session-factory>
+
+</hibernate-configuration>

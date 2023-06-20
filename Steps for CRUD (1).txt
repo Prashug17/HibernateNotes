@@ -1,0 +1,18 @@
+Step 1.Create new Project
+Step 2. Add all required jar files
+Step 3. Create a package for model - com.model
+Step 4. Add class Customer with below fields
+	private int cust_id;
+	private String cust_name;
+	private String cust_address;
+	Also add setters and getters.
+Step 5. Create configuration file.Give customized name as below
+	customer.cfg.xml
+Step 6. Create a mapping file
+	customer.hbm.xml
+Step 7. create DAO layer. Add a package com.dao
+	and add a class and get configuration file.
+	
+Step 5.create package for controller - com.controller
+Step 6. Add a class as CustomerController in com.controller package.
+	add all operations in this class.

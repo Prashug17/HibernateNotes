@@ -1,0 +1,174 @@
+what is hbm2ddl.auto?
+
+<hibernate-configuration>
+	<session-factory>
+	  <property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>    
+      <property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>    
+      <!-- Assume ProductManagment is the database name -->
+      <property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=ProductManagment;instanceName=SQLEXPRESS2019;</property>
+      <property name = "hibernate.connection.username">sa</property>
+      <property name = "hibernate.connection.password">password_123</property>
+ Here----><property name="hibernate.hbm2ddl.auto">update</property>
+      <!-- List of XML mapping files -->
+      <mapping class = "com.pojo.CustomerDetails"/>
+	</session-factory>
+</hibernate-configuration>
+
+Ans:-hbm2ddl.auto is a hibernate configuration property. 
+It is used to validate and exports schema DDL to the database when the SessionFactory is created.
+If we want to make use of it, we should have to pass the appropriate values to the hibernate.cfg.xml
+By defining the hbm2ddl.auto property, we can execute the DDL (Data Definition Language) commands from the hibernate 
+framework, while creating the SessionFactory itself.
+
+The hbm2ddl.auto property of Hibernate either creates or validates a database table.
+
+The possible values for hbm2ddl.auto:
+create
+validate
+update
+create-drop
+
+1.
+hbm2ddl.auto Create :
+If the value is CREATE then the hibernate first drops the existing tables data and structure, 
+then creates new tables and executes the operations on the newly created tables.
+<property name="hbm2ddl.auto">create</property>
+
+2.
+hbm2ddl.auto Validate :
+If the value is validate then hibernate only validates the table structure- whether the table 
+and columns have existed or not. If the table doesn’t exist then hibernate throws an exception.
+
+Validate is the default value for hbm2ddl.auto.
+
+3.
+hbm2ddl.auto update :
+If the value is update then, Hibernate checks for the table and columns. If a table doesn’t exist 
+then it creates new tables and where as if a column doesn’t exist it creates new columns for it.
+<property name="hbm2ddl.auto">validate</property>
+<property name="hbm2ddl.auto">update</property>
+But in the case of value “update” hibernate doesn’t drop any existing table, so that we don’t lose 
+existing table data.
+
+4.
+hbm2ddl.auto create-drop :
+If the value is create-drop then, Hibernate first checks for a table and do the necessary operations and
+ finally drops the table after all the operations were completed.
+
+<property name="hbm2ddl.auto">create-drop</property>
+The value “create-drop” is given for unit testing the hibernate code.
+
+
+For example visit -->
+https://www.onlinetutorialspoint.com/hibernate/hbm2ddl-auto-example-hibernate-xml-config.html#:~:text=auto%3A-,hbm2ddl.,appropriate%20values%20to%20the%20hibernate.
+
+
+Generator classes in Hibernate---->
+The <generator> class is a sub-element of id. It is used to generate the 
+unique identifier  for the objects of persistent class. 
+There are many generator classes defined in the Hibernate Framework.
+
+All the generator classes implements the org.hibernate.id.IdentifierGenerator 
+interface
+. The application programmer may create one's own generator classes by 
+implementing the IdentifierGenerator interface. Hibernate framework provides 
+many built-in generator classes:
+
+assigned
+increment
+sequence
+hilo
+native
+identity
+seqhilo
+uuid
+guid
+select
+foreign
+sequence-identity
+
+1) assigned
+It is the default generator strategy if there is no <generator> element .
+ In this case, application assigns the id. For example:
+....  
+ <hibernate-mapping>  
+  <class ...>  
+    <id ...>  
+     <generator class="assigned"></generator>  
+    </id>         
+    .....          
+  </class>  
+ </hibernate-mapping> 
+
+2) increment
+It generates the unique id only if no other process is inserting data 
+into this table. It generates short, int or long type identifier. 
+If a table contains an identifier then the application considers its maximum 
+value else the application consider that the first generated identifier is 1.
+ For each attribute value, the hibernate increment the identifier by 1.
+Syntax: 
+....  
+ <hibernate-mapping>  
+  <class ...>  
+    <id ...>  
+     <generator class="increment"></generator>  
+    </id>   
+    .....          
+  </class>  
+ </hibernate-mapping>  
+
+3) sequence
+It uses the sequence of the database. if there is no sequence defined, 
+it creates a sequence automatically e.g. in case of Oracle database, 
+it creates a sequence named HIBERNATE_SEQUENCE. In case of Oracle, DB2, SAP DB,
+ Postgre SQL or McKoi, it uses sequence but it uses generator in interbase. Syntax:
+
+.....  
+ <id ...>  
+  <generator class="sequence"></generator>  
+ </id>  
+ .....  
+
+4) hilo
+It uses high and low algorithm to generate the id of type short, int and long. Syntax:
+
+.....  
+ <id ...>  
+  <generator class="hilo"></generator>  
+ </id>  
+ .....  
+
+5) native
+It uses identity, sequence or hilo depending on the database vendor. Syntax:
+
+.....  
+ <id ...>  
+  <generator class="native"></generator>  
+ </id>  
+ .....  
+
+6) identity
+It is used in Sybase, My SQL, MS SQL Server, DB2 and HypersonicSQL to 
+support the id column. The returned id is of type short, int or long. 
+It is responsibility of database to generate unique identifier.
+
+7) seqhilo
+It uses high and low algorithm on the specified sequence name. 
+The returned id is of type short, int or long.
+
+8) uuid
+It uses 128-bit UUID algorithm to generate the id. The returned id is 
+of type String, unique within a network (because IP is used). 
+The UUID is represented in hexadecimal digits, 32 in length.
+
+9) guid
+It uses GUID generated by database of type string. It works on MS SQL Server and MySQL.
+
+10) select
+It uses the primary key returned by the database trigger.
+
+11) foreign
+It uses the id of another associated object, mostly used with <one-to-one> association.
+
+12) sequence-identity
+It uses a special sequence generation strategy. It is supported in Oracle 10g drivers only.

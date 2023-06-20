@@ -1,0 +1,9 @@
+Mapping
+One to One
+One to Many
+Many to Many
+Fetch Type
+	eager 
+	lazy
+get() vs load()
+Critearea

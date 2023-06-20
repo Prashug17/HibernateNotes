@@ -1,0 +1,139 @@
+package com.persistent;
+
+import javax.persistence.*;
+@Entity  
+@Table(name = "CarDetails")  
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)  
+@DiscriminatorColumn(name="type",discriminatorType=DiscriminatorType.STRING)  
+@DiscriminatorValue(value="car")  
+public class Car {
+	@Id  
+	@GeneratedValue(strategy=GenerationType.AUTO)      
+	@Column(name = "car_id")  
+	private int car_id;
+	@Column(name = "car_name")  
+	private String car_name;
+	public int getCar_id() {
+		return car_id;
+	}
+	public void setCar_id(int car_id) {
+		this.car_id = car_id;
+	}
+	public String getCar_name() {
+		return car_name;
+	}
+	public void setCar_name(String car_name) {
+		this.car_name = car_name;
+	}
+}
+---------------------------------------------------------
+package com.persistent;
+
+import javax.persistence.*;
+
+@Entity  
+@DiscriminatorValue("eco_car")  
+public class EconomicalCar extends Car {
+	@Column(name="car_price")    
+	private float car_price;
+	@Column(name="car_milage")    
+	private float car_milage;
+	public float getCar_price() {
+		return car_price;
+	}
+	public void setCar_price(float car_price) {
+		this.car_price = car_price;
+	}
+	public float getCar_milage() {
+		return car_milage;
+	}
+	public void setCar_milage(float car_milage) {
+		this.car_milage = car_milage;
+	}
+	
+}
+------------------------------------------------------------
+package com.persistent;
+
+import javax.persistence.*;
+
+@Entity  
+@DiscriminatorValue("lux_car")  
+public class LuxuriousCar extends Car {
+
+	@Column(name="engine_capacity")   
+	private int engine_capacity;
+	@Column(name="luxurious_features")  
+	private String luxurious_features;
+	public int getEngine_capacity() {
+		return engine_capacity;
+	}
+	public void setEngine_capacity(int engine_capacity) {
+		this.engine_capacity = engine_capacity;
+	}
+	public String getLuxurious_features() {
+		return luxurious_features;
+	}
+	public void setLuxurious_features(String luxurious_features) {
+		this.luxurious_features = luxurious_features;
+	}
+	
+}
+----------------------------------------------------------------------
+package com.persistent;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Configuration conf =new Configuration();
+		conf.configure();
+		SessionFactory sf = conf.buildSessionFactory();
+		Session session = sf.openSession();
+		Transaction trans = session.beginTransaction();
+		Car car = new Car();
+		car.setCar_id(24);
+		car.setCar_name("Mercedes");
+		EconomicalCar ecCar = new EconomicalCar();
+		ecCar.setCar_name("Maruti Alto");
+		ecCar.setCar_milage(22.5f);
+		ecCar.setCar_price(4.5f);
+		LuxuriousCar lxCar = new LuxuriousCar();
+		lxCar.setCar_name("Audi A6");
+		lxCar.setEngine_capacity(3000);
+		lxCar.setLuxurious_features("Full of features");
+		session.save(car);
+		session.save(ecCar);
+		session.save(lxCar);
+		trans.commit();
+
+	}
+
+}
+---------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+	<property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>    
+      <property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+      
+      <!-- Assume test is the database name -->
+      <property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=emp;instanceName=SQLEXPRESS2019;</property>
+      <property name = "hibernate.connection.username">sa</property>
+      <property name = "hibernate.connection.password">password_123</property>
+      <property name="hibernate.hbm2ddl.auto">update</property>
+      <!-- List of XML mapping files -->
+      <mapping class = "com.persistent.Car"/>
+      <mapping class = "com.persistent.EconomicalCar"/>
+      <mapping class = "com.persistent.LuxuriousCar"/>
+      
+	
+	</session-factory>
+
+</hibernate-configuration>
+---------------------------------------------------------------------

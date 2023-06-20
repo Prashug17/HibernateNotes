@@ -1,0 +1,123 @@
+package com.persistent;
+ 
+ 
+public class Car {
+	private int c_chesis_number; 
+	private String c_car_name;
+	
+	public int getC_chesis_number() {
+		return c_chesis_number;
+	}
+	public void setC_chesis_number(int c_chesis_number) {
+		this.c_chesis_number = c_chesis_number;
+	}
+	public String getC_car_name() {
+		return c_car_name;
+	}
+	public void setC_car_name(String c_car_name) {
+		this.c_car_name = c_car_name;
+	}
+	
+
+}
+----------------------------------------------------------
+package com.persistent;
+
+public class EconomicalCar extends Car {
+	
+	private float car_milage;
+	
+	private float car_price;
+	public float getCar_milage() {
+		return car_milage;
+	}
+	public void setCar_milage(float car_milage) {
+		this.car_milage = car_milage;
+	}
+	public float getCar_price() {
+		return car_price;
+	}
+	public void setCar_price(float car_price) {
+		this.car_price = car_price;
+	}
+	
+
+}
+------------------------------------------------------------------
+package com.persistent;
+
+
+public class LuxuriousCar extends Car{
+	
+	private int car_engine_capacity;
+	
+	private String car_features;
+	public int getCar_engine_capacity() {
+		return car_engine_capacity;
+	}
+	public void setCar_engine_capacity(int car_engine_capacity) {
+		this.car_engine_capacity = car_engine_capacity;
+	}
+	public String getCar_features() {
+		return car_features;
+	}
+	public void setCar_features(String car_features) {
+		this.car_features = car_features;
+	}
+	
+}
+--------------------------------------------------------------------
+car.hbm.xml
+--------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC  
+  
+  "-//Hibernate/Hibernate Mapping DTD 5.3//EN"  
+  "http://hibernate.sourceforge.net/hibernate-mapping-5.3.dtd">  
+  <hibernate-mapping>  
+  <class name="com.persistent.Car" table="MyCar">  
+  <id name="c_chesis_number">  
+  <generator class="increment"></generator>  
+  </id>  
+  <property name="c_car_name"></property>  
+  
+  <joined-subclass name="com.persistent.EconomicalCar" table="MyEcoCar">  
+  <key column="cid"></key>  
+  <property name="car_milage"></property>  
+  <property name="car_price"></property>  
+  </joined-subclass>  
+   
+  <joined-subclass name="com.persistent.LuxuriousCar" table="MyLuxCar">  
+  <key column="cid"></key>  
+  <property name="car_engine_capacity"></property>  
+  <property name="car_features"></property>  
+  </joined-subclass>  
+  
+  </class>  
+  </hibernate-mapping>  
+----------------------------------------------------
+hibernate.cfg.xml
+-------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+<session-factory>
+<property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+<property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+
+
+<property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=Employee;instanceName=SQLEXPRESS2019;</property>
+<property name = "hibernate.connection.username">sa</property>
+<property name = "hibernate.connection.password">password_123</property>
+<property name="hibernate.hbm2ddl.auto">update</property>
+<!-- List of XML mapping files -->
+<mapping resource = "car.hbm.xml"/>
+
+
+</session-factory>
+
+
+
+</hibernate-configuration>
+--------------------------------------------------------------

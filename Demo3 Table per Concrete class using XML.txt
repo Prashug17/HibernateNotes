@@ -1,0 +1,145 @@
+package com.persistent;
+
+public class Car {
+
+	private int cid;
+	private String cname;
+	public int getCid() {
+		return cid;
+	}
+	public void setCid(int cid) {
+		this.cid = cid;
+	}
+	public String getCname() {
+		return cname;
+	}
+	public void setCname(String cname) {
+		this.cname = cname;
+	}
+	
+}
+-------------------------------------------------------
+package com.persistent;
+
+
+public class EconomicalCar extends Car {
+private float car_price;
+private float car_milage;
+public float getCar_price() {
+	return car_price;
+}
+public void setCar_price(float car_price) {
+	this.car_price = car_price;
+}
+public float getCar_milage() {
+	return car_milage;
+}
+public void setCar_milage(float car_milage) {
+	this.car_milage = car_milage;
+}
+}
+----------------------------------------------------------
+package com.persistent;
+
+public class LuxuriousCar extends Car {
+private int engine_capacity;
+private String luxurious_features;
+public int getEngine_capacity() {
+	return engine_capacity;
+}
+public void setEngine_capacity(int engine_capacity) {
+	this.engine_capacity = engine_capacity;
+}
+public String getLuxurious_features() {
+	return luxurious_features;
+}
+public void setLuxurious_features(String luxurious_features) {
+	this.luxurious_features = luxurious_features;
+}
+
+}
+-------------------------------------------------------------------
+package com.persistent;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+
+public class Main {
+
+	public static void main(String[] args) {
+		Configuration conf =new Configuration();
+		conf.configure();
+		SessionFactory sf = conf.buildSessionFactory();
+		Session session = sf.openSession();
+		Transaction trans = session.beginTransaction();
+		Car car = new Car();
+		car.setCname("BMW 706");
+		EconomicalCar ecCar = new EconomicalCar();
+		ecCar.setCname("Maruti Swift");
+		ecCar.setCar_milage(25.5f);
+		ecCar.setCar_price(4.5f);
+		LuxuriousCar lxCar = new LuxuriousCar();
+		lxCar.setCname("Vovlvo");
+		lxCar.setEngine_capacity(3000);
+		lxCar.setLuxurious_features("Full of features");
+		session.save(car);
+		session.save(ecCar);
+		session.save(lxCar);
+		trans.commit();
+
+	}
+
+}
+-----------------------------------------------------------------------
+car.hbm.xml
+-------------------------
+<?xml version='1.0' encoding='UTF-8'?>  
+<!DOCTYPE hibernate-mapping PUBLIC  
+          "-//Hibernate/Hibernate Mapping DTD 5.3//EN"  
+          "http://hibernate.sourceforge.net/hibernate-mapping-5.3.dtd">  
+  <hibernate-mapping>  
+  <class name="com.persistent.Car" table="newCar">  
+  <id name="cid">  
+  <generator class="increment"></generator>  
+  </id>      
+  <property name="cname"></property>  
+            
+  <union-subclass name="com.persistent.EconomicalCar" table="newEcoCar">  
+  <property name="car_milage"></property>  
+  <property name="car_price"></property>  
+  </union-subclass>  
+            
+  <union-subclass name="com.persistent.LuxuriousCar" table="newLuxCar">  
+  <property name="engine_capacity"></property>  
+  <property name="luxurious_features"></property>  
+  </union-subclass>  
+            
+  </class>  
+            
+  </hibernate-mapping>
+----------------------------------------------------------
+hibernate.cfg.xml
+---------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+	<property name = "hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>    
+      <property name = "hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+      
+      <!-- Assume test is the database name -->
+      <property name = "hibernate.connection.url">jdbc:sqlserver://localhost;databaseName=emp;instanceName=SQLEXPRESS2019;</property>
+      <property name = "hibernate.connection.username">sa</property>
+      <property name = "hibernate.connection.password">password_123</property>
+      <property name="hibernate.hbm2ddl.auto">update</property>
+      <!-- List of XML mapping files -->
+      <mapping resource = "car.hbm.xml"/>
+	
+	</session-factory>
+
+</hibernate-configuration>
+----------------------------------------------------------------

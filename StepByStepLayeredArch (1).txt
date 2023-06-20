@@ -1,0 +1,183 @@
+com.shopping.model
+----------------------
+Product.java
+-----------------------------------
+public class Product {
+	private int prod_id;
+	private String prod_name;
+	private float prod_price;
+	public int getProd_id() {
+		return prod_id;
+	}
+	public void setProd_id(int prod_id) {
+		this.prod_id = prod_id;
+	}
+	public String getProd_name() {
+		return prod_name;
+	}
+	public void setProd_name(String prod_name) {
+		this.prod_name = prod_name;
+	}
+	public float getProd_price() {
+		return prod_price;
+	}
+	public void setProd_price(float prod_price) {
+		this.prod_price = prod_price;
+	}
+	public Product(int prod_id, String prod_name, float prod_price) {
+		super();
+		this.prod_id = prod_id;
+		this.prod_name = prod_name;
+		this.prod_price = prod_price;
+	}
+	public Product() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+		return "Product [prod_id=" + prod_id + ", prod_name=" + prod_name + ", prod_price=" + prod_price + "]";
+	}
+}
+------------------------------------------------------------------------
+com.shopping.dao
+-----------------------------
+ProductDao interface
+-----------------------------
+public interface ProductDao {
+	public List<Product> getProducts();
+	public void insertProduct();
+	public void deleteProduct();
+	public void updateProduct();	
+
+}
+------------------------------------------
+ProductDaoImpl
+-----------------------------
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import com.shopping.model.Product;
+
+public class ProductDaoImpl implements ProductDao {
+	Scanner input = new Scanner(System.in);
+	Product prod = new Product();
+
+	public static Connection getConnection() throws ClassNotFoundException {
+		Connection con = null;
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		try {
+			con = DriverManager.getConnection(
+					"jdbc:sqlserver://IMCCBCP48-MSL1\\SQLEXPRESS2019;databaseName=ABCStore;user=sa;password=password_123");
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return con;
+	}
+	@Override
+	public List<Product> getProducts() {
+		List<Product> list = new ArrayList();
+		try {
+			Connection con = getConnection();
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("Select * from Prod");
+			while(rs.next()) {
+				prod=new Product(rs.getInt(1),rs.getString(2),rs.getFloat(3));
+				list.add(prod);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return list;
+	}
+	@Override
+	public void insertProduct() {
+		System.out.println("Enter the Name of Product");
+		String prod_name = input.next();
+		System.out.println("Enter the Price of Product");
+		float prod_price = input.nextFloat();
+		prod.setProd_name(prod_name);
+		prod.setProd_price(prod_price);
+		try {
+			Connection con = getConnection();
+			PreparedStatement stmt = con.prepareStatement("insert into Prod values(?,?)");
+			stmt.setString(1, prod.getProd_name());
+			stmt.setFloat(2, prod.getProd_price());
+			stmt.executeUpdate();
+			System.out.println("PRoduct Inserted");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	@Override
+	public void deleteProduct() {
+		System.out.println("Enter the id of Product");
+		int prod_id = input.nextInt();
+		prod.setProd_id(prod_id);
+		try {
+			Connection con = getConnection();
+			PreparedStatement stmt = con.prepareStatement("delete from Prod where prod_id=?");
+			stmt.setInt(1, prod.getProd_id());
+			stmt.executeUpdate();
+			System.out.println("Product Deleted");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	@Override
+	public void updateProduct() {
+		System.out.println("Enter the id of Product");
+		int prod_id = input.nextInt();
+		System.out.println("Enter the Price of Product");
+		float prod_price = input.nextFloat();
+		prod.setProd_id(prod_id);
+		prod.setProd_price(prod_price);
+		try {
+			Connection con = getConnection();
+			PreparedStatement stmt = con.prepareStatement("update prod set produ_price=? where prod_id=?");
+			stmt.setFloat(1, prod.getProd_price());
+			stmt.setInt(2, prod.getProd_id());
+			stmt.executeUpdate();
+			System.out.println("Product Updated");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+}
+-----------------------------------------------------------------
+com.shopping.presentation
+----------------
+MainClass.java
+------------------------
+import java.util.Iterator;
+import java.util.List;
+
+import com.shopping.dao.ProductDaoImpl;
+import com.shopping.model.Product;
+
+public class MainClass {
+
+	public static void main(String[] args) {
+		ProductDaoImpl obj = new ProductDaoImpl();
+		//obj.insertProduct();
+		//obj.deleteProduct();
+		//obj.updateProduct();
+		List<Product> list=obj.getProducts();
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			Product product = (Product) iterator.next();
+			System.out.println(product.getProd_id()+"--"+product.getProd_name()+"--"+product.getProd_price());
+			
+		}		
+	}
+}
+-------------------------------------------------------------
